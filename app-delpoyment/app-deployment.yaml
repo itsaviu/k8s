@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-deployment
+spec:
+  selector:
+    matchLabels:
+      app: app-deployment
+      type: backend
+  template:
+    metadata:
+      name: demo-app
+      labels:
+        app: app-deployment
+        type: backend
+    spec:
+      containers:
+        - name: demo
+          image: aviu95/demo
+          imagePullPolicy: IfNotPresent
+          env:
+          - name: MANGER_DB_HOST
+            value: postgres-service #Service Name should be provided
+          - name: MANAGER_DB_NAME
+            valueFrom:
+              secretKeyRef:
+                name: postgres-secret
+                key: POSTGRES_DB
+          - name: MANGER_DB_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: postgres-secret
+                key: POSTGRES_USER
+          - name: MANAGER_DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: postgres-secret
+                key: POSTGRES_PASSWORD
+          ports:
+            - name: http
+              containerPort: 8080

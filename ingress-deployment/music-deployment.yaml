@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: music-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: music-service
+      type: backend
+  template:
+    metadata:
+      name: music
+      labels:
+        app: music-service
+        type: backend
+    spec:
+      containers:
+        - name: music
+          image: aviu95/movie
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080

@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-db-postgres
+  labels:
+    app: demo-app
+spec:
+  selector:
+    matchLabels:
+      app: postgres-db
+      type: demo
+  template:
+    metadata:
+      labels:
+        app: postgres-db
+        type: demo
+    spec:    
+      containers:
+        - name: postgres
+          image: postgres
+          envFrom:
+          - secretRef:
+              name: postgres-secret
+          # env:
+          # - name: POSTGRES_DB
+          #   valueFrom:
+          #     secretKeyRef:
+          #       name: postgres-secret
+          #       key: POSTGRES_DB
+          # - name: POSTGRES_USER
+          #   valueFrom:
+          #     secretKeyRef:
+          #       name: postgres-secret
+          #       key: POSTGRES_USER
+          # - name: POSTGRES_PASSWORD
+          #   valueFrom:
+          #     secretKeyRef:
+          #       name: postgres-secret
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: postgres-persistent-storage
+              mountPath: /var/lib/postgresql/data
+      volumes:                      
+        - name: postgres-persistent-storage
+          persistentVolumeClaim:
+            claimName: postgres-pv-claim    
